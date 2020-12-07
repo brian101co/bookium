@@ -1,0 +1,54 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container" id="feed-app">
+    <div class="columns">
+        <div class="column is-12">
+            <div class="wrapper-form">
+                <form action="" v-on:submit.prevent="submitePost()">
+                    <div class="field">
+                        <div class="control">
+                            <textarea class="textarea" v-model="body" placeholder="What book would you like to share?">
+
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-success">Post</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="wrapper-posts">
+                <div class="post" v-for="post in posts">
+                    <p>${ post.body }</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const app = Vue.createApp({
+        delimiters: ['${', '}'],
+        data() {
+            return {
+                posts: [],
+                body: ""
+            }
+        },
+        methods: {
+            submitPost() {
+                console.log("Submitted Post")
+            }
+        }
+    });
+
+    app.mount('#feed-app');
+</script>
+{% endblock %}

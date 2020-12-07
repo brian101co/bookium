@@ -1,0 +1,33 @@
+{% load sass_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bookium</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.css">
+        <link rel="stylesheet" type="text/css" href="{% sass_src 'core/scss/main.scss' %}">
+    </head>
+
+    <body>
+        <!-- NAVBAR -->
+        {% include 'core/includes/navbar.html' %}
+        <!-- END NAVBAR -->
+
+        <!-- MAIN CONTENT -->
+        {% block content %}
+
+        {% endblock %}
+        <!-- END CONTENT -->
+
+        <!-- SCRIPTS -->
+        <script src="https://unpkg.com/vue@next"></script>
+        {% block scripts %}
+
+        {% endblock %}
+        <!-- END SCRIPTS -->
+    </body>
+
+</html>

@@ -1,0 +1,34 @@
+.hero {
+  background: linear-gradient(to right, rgba(27, 156, 203, 0.8), rgba(48, 152, 218, 0.2)), url("https://images.unsplash.com/photo-1473492201326-7c01dd2e596b?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1351&q=80");
+  background-position: top;
+  background-size: cover;
+  height: 60vh; }
+  .hero .hero-body {
+    height: 100%;
+    display: flex;
+    margin-left: 3rem; }
+  .hero .subtitle {
+    line-height: 1.5; }
+  .hero .wrapper {
+    background-color: rgba(255, 255, 255, 0.9);
+    align-self: center;
+    width: 40%;
+    padding: 2rem; }
+
+@media screen and (max-width: 860px) {
+  .hero {
+    height: 55vh; }
+    .hero .hero-body {
+      margin-left: 2rem; }
+    .hero .wrapper {
+      width: 50%; } }
+
+@media screen and (max-width: 450px) {
+  .hero {
+    height: 100vh; }
+    .hero .hero-body {
+      margin-left: 0; }
+    .hero .wrapper {
+      width: 100%; } }
+
+/*# sourceMappingURL=main.css.map */
