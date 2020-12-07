@@ -10,6 +10,7 @@ django = "*"
 libsass = "*"
 django-sass-processor = "*"
 django-imagekit = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"

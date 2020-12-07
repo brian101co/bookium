@@ -13,7 +13,9 @@ class Profile(models.Model):
         upload_to=upload_avatar_image, 
         processors=[ResizeToFill(100, 100)],
         format="JPEG",
-        options={"quality":80}
+        options={"quality":80},
+        blank=True,
+        null=True
     )
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     follows = models.ManyToManyField('self', related_name='followed_by', symmetrical=False)
