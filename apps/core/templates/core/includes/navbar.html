@@ -18,6 +18,9 @@
                 <a class="navbar-item" href="{% url 'feed' %}">
                     Feed
                 </a>
+                <a class="navbar-item" href="{% url 'profile' request.user.username %}">
+                    Profile
+                </a>
                 {% endif %}
                 <div class="navbar-item">
                     <div class="buttons">

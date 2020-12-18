@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.feed',
     'apps.profiles',
+    'apps.books',
 
     'sass_processor',
     'imagekit',
