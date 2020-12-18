@@ -1,34 +1,70 @@
 {% extends 'core/base.html' %}
 
+{% load static humanize %}
+
 {% block content %}
 <div class="container" id="feed-app">
     <div class="columns">
-        <div class="column is-12">
-            <div class="wrapper-form">
-                <form action="" v-on:submit.prevent="submitePost()">
-                    <div class="field">
-                        <div class="control">
-                            <textarea class="textarea" v-model="body" placeholder="What book would you like to share?">
-
-                            </textarea>
-                        </div>
+        <div class="column is-two-thirds">
+            <section class="section">
+                <div class="card">
+                    <div class="card-content is-flex is-align-items-center">
+                        <figure class="image mr-3 is-48x48">
+                            <img class="is-rounded" src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
+                        </figure>
+                        <button class="fake-input-btn" type="button" v-on:click="openModal()">Connect with friends by sharing a book.</button>
                     </div>
-                    <div class="field">
-                        <div class="control">
-                            <button class="button is-success">Post</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="wrapper-posts">
-                <div class="post" v-for="post in posts">
-                    <p>${ post.body }</p>
                 </div>
-            </div>
+
+                <!-- Post Form Modal -->
+                <div class="modal" v-bind:class="{'is-active': modal.opened}">
+                    <div class="modal-background"></div>
+                    <div class="modal-content">
+                        <div class="wrapper-form has-background-white box">
+                            <h2 class="title">Create Post</h2>
+                            <form action="" v-on:submit.prevent="submitPost()">
+                                <div class="field">
+                                    <div class="control">
+                                        <textarea class="textarea" v-model="body" placeholder="What book would you like to share?">
+
+                                        </textarea>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="control">
+                                        <button class="button is-success" type="submit">Post</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <button class="modal-close is-large" aria-label="close" v-on:click="openModal()"></button>
+                </div>
+                <!-- End Modal -->
+
+                <div class="wrapper-posts">
+                    <div class="post" v-for="post in posts">
+                        <div class="box mt-5">
+                            <h5 class="title is-5">${ post.user }</h5>
+                            <p>${ post.body }</p>
+                            <p class="has-text-grey">${ post.created_at }</p>
+                        </div>
+                    </div>
+                    {% for post in posts %}
+                    <div class="post">
+                        <div class="box mt-5">
+                            <h5 class="is-size-5 has-text-weight-bold">{{ post.created_by.username }}</h5>
+                            <p class="has-text-grey mb-3"><small>{{ post.created_at|naturaltime }}</small></p>
+                            <p>{{ post.body }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -39,12 +75,45 @@
         data() {
             return {
                 posts: [],
-                body: ""
+                body: "",
+                user: "{{ request.user.username }}",
+                created_at: "Now",
+                modal: {
+                    opened: false,
+                }
             }
         },
         methods: {
             submitPost() {
-                console.log("Submitted Post")
+                if (this.body.length > 0) {
+                    const post = {
+                        user: this.user,
+                        body: this.body,
+                        created_at: this.created_at
+                    };
+
+                    this.posts.unshift(post);
+
+                    // Send to Backend
+                    fetch("api/add_post/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}",
+                        },
+                        credentials: "same-origin",
+                        body: JSON.stringify(post)
+                    }).then(res => {
+                        console.log(res)
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                }
+                this.body = "";
+                this.openModal();
+            },
+            openModal() {
+                this.modal.opened = !this.modal.opened;
             }
         }
     });
