@@ -2,6 +2,10 @@
 
 {% load static humanize %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+{% endblock %}
+
 {% block content %}
 <div class="container" id="feed-app">
     <div class="columns">
@@ -32,7 +36,8 @@
                                 </div>
                                 <div class="field">
                                     <div class="control">
-                                        <button class="button is-success" type="submit">Post</button>
+                                        <button class="button is-primary is-rounded mr-2" type="submit">Post</button>
+                                        <button class="button is-light is-info is-rounded">Close</button>
                                     </div>
                                 </div>
                             </form>
