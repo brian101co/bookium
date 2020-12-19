@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-multiline">
+            <div class="column">
+                <figure class="image">
+                    <img class="" src="https://images.unsplash.com/photo-1519612632649-158aa883572a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1267&q=80" alt="">
+                </figure>
+            </div>
+            <div class="column is-one-third">
+                <div class="card">
+                    <div class="card-content">
+                        <h1 class="title is-3">Create Bookshelf</h1>
+                        <form method="post" action="{% url 'create_bookshelf' %}">
+                            {% csrf_token %}
+
+                            {% for field in form.visible_fields %}
+                            <div class="field">
+                                <div class="control">
+                                    <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
+                                    <input id="{{ field.id_for_label }}" name="{{ field.html_name }}" class="input" type="text" placeholder="Name">
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <button type="submit" class="button is-primary">Create</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

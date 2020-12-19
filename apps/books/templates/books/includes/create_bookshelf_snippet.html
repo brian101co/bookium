@@ -1,0 +1,25 @@
+<div class="modal" v-bind:class="{'is-active': shelfModalOpen}">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="card">
+            <div class="card-content">
+                <h2 class="title is-3">Create Bookshelf</h2>
+                <form method="post" action="{% url 'create_bookshelf' %}" v-on:submit.prevent="addBookshelf()">
+                    {% csrf_token %}
+
+                    {% for field in form.visible_fields %}
+                    <div class="field">
+                        <div class="control">
+                            <label for="{{ field.id_for_label }}" class="label">{{ field.label }}</label>
+                            <input v-model="shelf_name" id="{{ field.id_for_label }}" name="{{ field.html_name }}" class="input" type="text" placeholder="Name">
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="button is-primary">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" v-on:click="toggleShelfModal()" aria-label="close"></button>
+</div>

@@ -1,9 +1,9 @@
 {% extends 'core/base.html' %}
 
-{% load humanize %}
+{% load humanize static %}
 
 {% block content %}
-<section class="section">
+<section class="section" id="app">
     <div class="container">
         <div class="columns is-desktop">
             <div class="column">
@@ -25,19 +25,34 @@
                 </div>
             </div>
             <div class="column is-two-thirds-desktop">
-                <div class="p-4">
-                    <h2 class="title is-3">Books</h2>
+                <div class="px-4">
+                    {% if request.user == user %}
+                    <div class="is-flex is-justify-content-space-between is-align-content-center">
+                        <h2 class="title is-3">My Library</h2>
+                        <figure class="image is-32x32">
+                            <img style="cursor:pointer;" v-on:click="toggleShelfModal()" src="{% static 'profiles/images/plus_square.svg' %}" alt="Add a Bookshelf button">
+                        </figure>
+                    </div>
+
+                    {% else %}
+                    <h2 class="title is-3">{{ user.username|title }}'s Library</h2>
+                    {% endif %}
                 </div>
-                <article class="card">
+
+                <article class="card block" v-for="shelf in shelves">
                     <div class="card-content">
-                        <h5 class="title is-5">Book Title</h5>
+                        <h5 class="title is-5">${ shelf.name }</h5>
                     </div>
                 </article>
+
+                {% include "books/includes/bookshelf_snippet.html" with user=user %}
+                {% include "books/includes/create_bookshelf_snippet.html" with form=form %}
+
                 <div class="p-4 mt-4">
                     <h2 class="title is-3">Posts</h2>
                 </div>
                 {% for post in user.posts.all %}
-                <article class="card">
+                <article class="card block">
                     <div class="card-content">
                         <div class="block is-flex is-justify-content-space-between is-align-content-center">
                             <h5 class="is-size-5 has-text-weight-bold">{{ post.created_by.username }}</h5>
@@ -51,4 +66,52 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const app = Vue.createApp({
+        delimiters: ['${', '}'],
+        data() {
+            return {
+                shelfModalOpen: false,
+                shelf_name: "",
+                shelves: [],
+            }
+        },
+        methods: {
+            toggleShelfModal() {
+                this.shelfModalOpen = !this.shelfModalOpen;
+            },
+            addBookshelf() {
+                if (this.shelf_name) {
+                    const bookshelf = {
+                        name: this.shelf_name,
+                    }
+
+                    this.shelves.unshift(bookshelf);
+
+                    fetch("{% url 'create_bookshelf' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}",
+                        },
+                        credentials: "same-origin",
+                        body: JSON.stringify(bookshelf)
+                    }).then(res => {
+                        console.log(res)
+                    }).catch(err => {
+                        console.log(err);
+                    })
+                }
+
+                this.toggleShelfModal();
+                this.shelf_name = "";
+            },
+        }
+    });
+
+    app.mount("#app");
+</script>
 {% endblock %}
