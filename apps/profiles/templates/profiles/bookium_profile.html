@@ -24,6 +24,19 @@
                                 <p class="subtitle"><small class="has-text-grey is-size-6">{{ user.profile.followed_by.count }} followers</small></p>
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde deleniti saepe laborum reprehenderit culpa facilis fugit laboriosam dicta voluptate eius, quod, accusamus, quis corporis voluptatum vel? Eius sequi iure sed.</p>
                             </div>
+                            {% if user != request.user %}
+                            <div class="media-right">
+                                {% if following %}
+                                <figure v-if="following" class="image is-24x24">
+                                    <img v-on:click="unfollow()" class="is-clickable" src="{% static 'profiles/images/following.svg' %}" alt="follow button">
+                                </figure>
+                                {% else %}
+                                <figure v-else class="image is-24x24">
+                                    <img v-on:click="followUser()" class="is-clickable" src="{% static 'profiles/images/follow.svg' %}" alt="follow button">
+                                </figure>
+                                {% endif %}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -34,7 +47,7 @@
                     <div class="is-flex is-justify-content-space-between is-align-content-center">
                         <h2 class="title is-3">My Library</h2>
                         <figure class="image is-32x32">
-                            <img style="cursor:pointer;" v-on:click="toggleShelfModal()" src="{% static 'profiles/images/plus_square.svg' %}" alt="Add a Bookshelf button">
+                            <img class="is-clickable" v-on:click="toggleShelfModal()" src="{% static 'profiles/images/plus_square.svg' %}" alt="Add a Bookshelf button">
                         </figure>
                     </div>
 
@@ -43,9 +56,20 @@
                     {% endif %}
                 </div>
 
-                <article class="card block" v-for="shelf in shelves">
-                    <div class="card-content">
-                        <h5 class="title is-5">${ shelf.name }</h5>
+                <article class="card block is-clickable" v-for="(shelf, index) in shelves" v-bind:id="shelf.id">
+                    <div class="card-content is-flex is-justify-content-space-between is-align-content-center">
+                        <h5 class="title is-5 mb-0">${ shelf.name }</h5>
+                        <div class="is-flex is-justify-content-space-between is-align-content-center">
+                            ${ shelf.count }
+                            <div class="is-flex">
+                                <figure class="image is-24x24 mr-2">
+                                    <img class="ml-2 " src="{% static 'profiles/images/book.svg' %}" alt="Book Icon">
+                                </figure>
+                                <figure class="image is-24x24">
+                                    <img v-on:click="removeShelf" v-bind:data-index="index" v-bind:data-parent="shelf.id" v-bind:data-action="shelf.deleteURL" class="ml-2" src="{% static 'profiles/images/remove.svg' %}" alt="Remove Bookshelf Icon">
+                                </figure>
+                            </div>
+                        </div>
                     </div>
                 </article>
 
@@ -81,6 +105,8 @@
                 shelfModalOpen: false,
                 shelf_name: "",
                 shelves: [],
+                following: "True" === "{{ following }}",
+                hovered: false,
             }
         },
         methods: {
@@ -93,8 +119,6 @@
                         name: this.shelf_name,
                     }
 
-                    this.shelves.unshift(bookshelf);
-
                     fetch("{% url 'create_bookshelf' %}", {
                         method: "POST",
                         headers: {
@@ -104,7 +128,14 @@
                         credentials: "same-origin",
                         body: JSON.stringify(bookshelf)
                     }).then(res => {
-                        console.log(res)
+                        return res.json();
+                    }).then(data => {
+                        if (data.success) {
+                            bookshelf.count = 0;
+                            bookshelf.deleteURL = data.deleteURL;
+                            bookshelf.id = `shelf-${data.id}`;
+                            this.shelves.unshift(bookshelf);
+                        }
                     }).catch(err => {
                         console.log(err);
                     })
@@ -112,6 +143,58 @@
 
                 this.toggleShelfModal();
                 this.shelf_name = "";
+            },
+            followUser() {
+                this.following = true;
+                fetch("{% url 'follow' user.username %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                }).then(res => {
+                    console.log(res)
+                }).catch(err => {
+                    console.log(err);
+                })
+            },
+            unfollow() {
+                this.following = false;
+                fetch("{% url 'unfollow' user.username %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                }).then(res => {
+                    console.log(res);
+                }).catch(err => {
+                    console.log(err);
+                })
+            },
+            removeShelf(event) {
+                fetch(event.target.dataset.action, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                }).then(res => {
+                    return res.json();
+                }).then(data => {
+                    if (data.success) {
+                        if (event.target.dataset.ssr === "true") {
+                            const parent = document.querySelector(`#${event.target.dataset.parent}`);
+                            parent.remove();
+                        }
+                        this.shelves.splice(event.target.dataset.index, 1);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                })
             },
         }
     });

@@ -7,10 +7,11 @@
 {% endblock %}
 
 {% block content %}
-<div class="container" id="feed-app">
-    <div class="columns">
-        <div class="column is-two-thirds">
-            <section class="section">
+<section class="section">
+    <div class="container" id="feed-app">
+        <div class="columns">
+            <div class="column is-two-thirds">
+
                 <div class="card">
                     <div class="card-content is-flex is-align-items-center">
                         <figure class="image mr-3 is-48x48">
@@ -37,7 +38,7 @@
                                 <div class="field">
                                     <div class="control">
                                         <button class="button is-primary is-rounded mr-2" type="submit">Post</button>
-                                        <button class="button is-light is-info is-rounded">Close</button>
+                                        <button v-on:click="openModal()" type="button" class="button is-light is-info is-rounded">Close</button>
                                     </div>
                                 </div>
                             </form>
@@ -61,7 +62,9 @@
                     <div class="post">
                         <div class="box mt-5">
                             <div class="block is-flex is-justify-content-space-between is-align-content-center">
-                                <h5 class="is-size-5 has-text-weight-bold">{{ post.created_by.username }}</h5>
+                                <a href="{% url 'profile' post.created_by.username %}">
+                                    <h5 class="is-size-5 has-text-weight-bold">{{ post.created_by.username }}</h5>
+                                </a>
                                 <p class="has-text-grey"><small>{{ post.created_at|naturaltime }}</small></p>
                             </div>
                             <p>{{ post.body }}</p>
@@ -69,10 +72,26 @@
                     </div>
                     {% endfor %}
                 </div>
-            </section>
+            </div>
+
+            <div class="column">
+                <article class="card">
+                    <div class="card-content">
+                        <h3 class="title is-4">Find Users</h3>
+                        <form action="{% url 'search' %}" method="GET">
+                            <label for="q" class="label is-hidden">Username</label>
+                            <div class="control">
+                                <input type="text" name="q" class="input is-rounded" placeholder="Search user">
+                            </div>
+                            <button type="submit" class="button is-rounded is-primary mt-3">Search</button>
+                        </form>
+                    </div>
+                </article>
+
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 {% endblock %}
 

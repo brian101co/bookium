@@ -17,7 +17,10 @@ class Profile(models.Model):
         blank=True,
         null=True
     )
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     follows = models.ManyToManyField('self', related_name='followed_by', symmetrical=False)
+
+    def __str__(self):
+        return f"{self.user.username}'s profile "
 
 User.profile = property(lambda u:Profile.objects.get_or_create(user=u)[0])
