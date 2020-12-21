@@ -3,7 +3,7 @@
 {% for bookshelf in user.bookshelves.all %}
 <article class="card block is-clickable" id="shelf-{{ bookshelf.id }}">
     <div class="card-content is-flex is-justify-content-space-between is-align-content-center">
-        <h5 class="title is-5 mb-0">{{ bookshelf }}</h5>
+        <h5 class="title is-5 mb-0"><a href="{% url 'detail_bookshelf' bookshelf.id %}">{{ bookshelf }}</a></h5>
         <div class="is-flex is-justify-content-space-between is-align-content-center">
             {{ bookshelf.books.count }}
             <div class="is-flex">

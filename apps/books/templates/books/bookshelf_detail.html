@@ -1,0 +1,77 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<section class="section" id="app">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <div class="is-flex is-justify-content-space-between is-align-content-center">
+                    <h1 class="title is-2">Bookshelf: {{ object.name }}</h1>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button v-on:click="openModal()" class="button">Add Book</button>
+                        </div>
+                    </div>
+                </div>
+                {% for book in object.books.all %}
+                <article class="card">
+                    <div class="card-content">
+                        <h3 class="title is-5">{{ book.title }}</h3>
+                    </div>
+                </article>
+                {% empty %}
+                <article class="card">
+                    <div class="card-content">
+                        <h2 class="title is-5">You have no books in your bookshelf.</h2>
+                    </div>
+                </article>
+                {% endfor %}
+
+                {% include "books/includes/create_book_snippet.html" %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const app = Vue.createApp({
+        delimiters: ['${', '}'],
+        data() {
+            return {
+                createBookModalOpen: false,
+                addBookManually: false,
+                query: "",
+                books: [],
+            }
+        },
+        methods: {
+            openModal() {
+                this.createBookModalOpen = !this.createBookModalOpen;
+            },
+            addBook() {
+
+            },
+            searchBook() {
+                fetch("{% url 'search_book' %}?" + new URLSearchParams({
+                    q: this.query,
+                })).then(res => {
+                    return res.json();
+                }).then(data => {
+                    console.log(data.items);
+                    for (let i = 0; i < 10; i++) {
+                        this.books.push(data.items[i].volumeInfo);
+                    }
+                }).catch(error => {
+                    console.log(error);
+                })
+            }
+        },
+    });
+
+    app.mount("#app")
+</script>
+{% endblock %}
