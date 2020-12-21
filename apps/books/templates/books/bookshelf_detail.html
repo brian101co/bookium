@@ -15,8 +15,13 @@
                         </div>
                     </div>
                 </div>
+                <article v-for="book in selectedBooks" class="card block">
+                    <div class="card-content">
+                        <h3 class="title is-5">${ book.title }</h3>
+                    </div>
+                </article>
                 {% for book in object.books.all %}
-                <article class="card">
+                <article class="card block">
                     <div class="card-content">
                         <h3 class="title is-5">{{ book.title }}</h3>
                     </div>
@@ -46,14 +51,16 @@
                 addBookManually: false,
                 query: "",
                 books: [],
+                selectedBooks: [],
             }
         },
         methods: {
             openModal() {
                 this.createBookModalOpen = !this.createBookModalOpen;
             },
-            addBook() {
-
+            addBook(index) {
+                this.selectedBooks.push(this.books[index]);
+                this.books.splice(index, 1);
             },
             searchBook() {
                 fetch("{% url 'search_book' %}?" + new URLSearchParams({
