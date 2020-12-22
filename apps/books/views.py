@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden, Http404
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Bookshelf
+from .models import Bookshelf, Book
 from .forms import BookshelfForm, BookForm
 
 class BookshelfDetailView(LoginRequiredMixin, DetailView):
@@ -64,6 +64,17 @@ def delete_bookshelf(request, id):
         bookshelf = get_object_or_404(Bookshelf, pk=id)
         if bookshelf.user == request.user:
             bookshelf.delete()
+            return JsonResponse({"success": True})
+        else:
+            return HttpResponseForbidden()
+
+
+@login_required
+def delete_book(request, book_id):
+    if request.method == "DELETE":
+        book = get_object_or_404(Book, pk=book_id)
+        if book.bookshelf.user == request.user:
+            book.delete()
             return JsonResponse({"success": True})
         else:
             return HttpResponseForbidden()

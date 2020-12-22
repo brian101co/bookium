@@ -42,7 +42,7 @@
                     </div>
                 </article>
                 {% for book in object.books.all %}
-                <article class="card block" id="{{ book.id }}">
+                <article class="card block" id="book-{{ book.id }}">
                     <div class="card-content">
                         <div class="media">
                             {% if book.image_link %}
@@ -73,7 +73,7 @@
                                     </div>
                                     <div class="wrapper is-flex is-align-content-center is-clickable">
                                         <figure class="image mr-2 is-24x24">
-                                            <img role="button" src="{% static 'profiles/images/remove.svg' %}" alt="Edit Book">
+                                            <img v-on:click="deleteBook" data-id="{{ book.id }}" data-action="{% url 'delete_book' book.id %}" role="button" src="{% static 'profiles/images/remove.svg' %}" alt="Edit Book">
                                         </figure>
                                         Delete
                                     </div>
@@ -156,6 +156,27 @@
                     console.log(error);
                 })
 
+            },
+            deleteBook(event) {
+                fetch(event.target.dataset.action, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                }).then(res => {
+                    return res.json();
+                }).then(data => {
+                    if (data.success) {
+                        if (event.target.dataset.id) {
+                            const book = document.querySelector(`#book-${event.target.dataset.id}`);
+                            book.remove();
+                        }
+                    }
+                }).catch(error => {
+                    console.log(error);
+                })
             },
             searchBook() {
                 fetch("{% url 'search_book' %}?" + new URLSearchParams({
