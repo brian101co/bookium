@@ -52,9 +52,6 @@ def create_bookshelf(request):
                 "deleteURL": reverse("delete_bookshelf", kwargs={
                     "id": bookshelf.id,
                 }),
-                "shelfURL": reverse("detail_bookshelf", kwargs={
-                    "id": bookshelf.id,
-                }),
                 "id": bookshelf.id,
             }
             return JsonResponse(data)

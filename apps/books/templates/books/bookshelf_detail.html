@@ -1,6 +1,10 @@
 {% extends "core/base.html" %}
 
-{% load static %}
+{% load static sass_tags %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% sass_src 'css/book_detail.scss' %}">
+{% endblock %}
 
 {% block content %}
 <section class="section" id="app">
@@ -31,14 +35,14 @@
 
                             <div class="media-right">
                                 <figure class="image is-32x32">
-                                    <img role="button" class="is-clickable" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                    <img role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Book">
                                 </figure>
                             </div>
                         </div>
                     </div>
                 </article>
                 {% for book in object.books.all %}
-                <article class="card block">
+                <article class="card block" id="{{ book.id }}">
                     <div class="card-content">
                         <div class="media">
                             {% if book.image_link %}
@@ -58,8 +62,22 @@
 
                             <div class="media-right">
                                 <figure class="image is-32x32">
-                                    <img role="button" class="is-clickable" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                    <img v-on:click="openEditMenu" data-id="{{ book.id }}" role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Book">
                                 </figure>
+                                <div class="box editing-menu" id="edit-{{ book.id }}" v-bind:class={active:editMenuOpen}>
+                                    <div class="wrapper is-flex is-align-content-center mb-3 is-clickable">
+                                        <figure class="image is-24x24 mr-2">
+                                            <img role="button" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                        </figure>
+                                        Edit
+                                    </div>
+                                    <div class="wrapper is-flex is-align-content-center is-clickable">
+                                        <figure class="image mr-2 is-24x24">
+                                            <img role="button" src="{% static 'profiles/images/remove.svg' %}" alt="Edit Book">
+                                        </figure>
+                                        Delete
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -87,6 +105,7 @@
             return {
                 createBookModalOpen: false,
                 addBookManually: false,
+                editMenuOpen: false,
                 query: "",
                 books: [],
                 selectedBooks: [],
@@ -95,6 +114,14 @@
         methods: {
             openModal() {
                 this.createBookModalOpen = !this.createBookModalOpen;
+            },
+            openEditMenu(event) {
+                if (event.target.dataset.id) {
+                    const menu = document.querySelector(`#edit-${event.target.dataset.id}`);
+                    menu.classList.toggle("active");
+                } else {
+                    this.editMenuOpen = !this.editMenuOpen;
+                }
             },
             addBook(index) {
                 this.selectedBooks.push(this.books[index]);
