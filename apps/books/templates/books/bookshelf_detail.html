@@ -71,9 +71,9 @@
                                         </figure>
                                         Edit
                                     </div>
-                                    <div class="wrapper is-flex is-align-content-center is-clickable">
+                                    <div role="button" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="deleteBook" data-id="{{ book.id }}" data-action="{% url 'delete_book' book.id %}">
                                         <figure class="image mr-2 is-24x24">
-                                            <img v-on:click="deleteBook" data-id="{{ book.id }}" data-action="{% url 'delete_book' book.id %}" role="button" src="{% static 'profiles/images/remove.svg' %}" alt="Edit Book">
+                                            <img src="{% static 'profiles/images/remove.svg' %}" alt="Remove Book">
                                         </figure>
                                         Delete
                                     </div>
