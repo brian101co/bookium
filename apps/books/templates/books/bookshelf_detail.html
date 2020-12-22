@@ -17,13 +17,51 @@
                 </div>
                 <article v-for="book in selectedBooks" class="card block">
                     <div class="card-content">
-                        <h3 class="title is-5">${ book.title }</h3>
+                        <div class="media">
+                            <div v-if="book.imageLinks" class="media-left">
+                                <figure class="image is-64x64">
+                                    <img v-bind:src="book.imageLinks.smallThumbnail" v-bind:alt="book.title">
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <h5 class="title is-5">${ book.title }</h5>
+                                <p v-if="book.subtitle" class="subtitle"><small>${ book.subtitle }</small></p>
+                                <p>${ book.description }</p>
+                            </div>
+
+                            <div class="media-right">
+                                <figure class="image is-32x32">
+                                    <img role="button" class="is-clickable" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                </figure>
+                            </div>
+                        </div>
                     </div>
                 </article>
                 {% for book in object.books.all %}
                 <article class="card block">
                     <div class="card-content">
-                        <h3 class="title is-5">{{ book.title }}</h3>
+                        <div class="media">
+                            {% if book.image_link %}
+                            <div class="media-left">
+                                <figure class="image is-64x64">
+                                    <img src="{{ book.image_link }}" alt="{{ book.title }}">
+                                </figure>
+                            </div>
+                            {% endif %}
+                            <div class="media-content">
+                                <h5 class="title is-5">{{ book.title }}</h5>
+                                {% if book.subtitle %}
+                                <p class="subtitle"><small>{{ book.subtitle }}</small></p>
+                                {% endif %}
+                                <p>{{ book.description }}</p>
+                            </div>
+
+                            <div class="media-right">
+                                <figure class="image is-32x32">
+                                    <img role="button" class="is-clickable" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                </figure>
+                            </div>
+                        </div>
                     </div>
                 </article>
                 {% empty %}
@@ -60,7 +98,37 @@
             },
             addBook(index) {
                 this.selectedBooks.push(this.books[index]);
-                this.books.splice(index, 1);
+                const book = this.books.splice(index, 1)[0];
+
+                const data = {
+                    title: book.title ? book.title : null,
+                    subtitle: book.subtitle ? book.subtitle : null,
+                    author: book.authors ? book.authors[0] : null,
+                    description: book.description ? book.description : null,
+                    image_link: book.imageLinks ? book.imageLinks.smallThumbnail : null,
+                    page_count: book.pageCount ? book.pageCount : null,
+                    published_year: book.publishedDate ? book.publishedDate : null,
+                }
+
+                fetch("{% url 'create_book' object.id %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify(data)
+                }).then(res => {
+                    return res.json();
+                }).then(data => {
+                    if (data.success) {
+                        this.openModal();
+                        this.books = [];
+                    }
+                }).catch(error => {
+                    console.log(error);
+                })
+
             },
             searchBook() {
                 fetch("{% url 'search_book' %}?" + new URLSearchParams({

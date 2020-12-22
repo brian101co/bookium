@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseForbidden, Http404
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Bookshelf
-from .forms import BookshelfForm
+from .forms import BookshelfForm, BookForm
 
 class BookshelfDetailView(LoginRequiredMixin, DetailView):
     model = Bookshelf
@@ -20,22 +20,42 @@ class BookshelfDetailView(LoginRequiredMixin, DetailView):
         return obj
 
 @login_required
+def create_book(request, bookshelf_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        form = BookForm(data)
+
+        if form.is_valid():
+            book = form.save(commit=False)
+            book.bookshelf = get_object_or_404(Bookshelf, pk=bookshelf_id)
+            book.save()
+            data = {
+                "success": True,
+            }
+            return JsonResponse(data)
+        else:
+            return JsonResponse({"failure": True, "msg": "Form Invalid"})
+
+
+@login_required
 def create_bookshelf(request):
     if request.method == "POST":
         data = json.loads(request.body)
         form = BookshelfForm(data)
         
         if form.is_valid():
-            obj = form.save(commit=False)
-            obj.user = request.user
-            obj.save()
-            print(obj.id)
+            bookshelf = form.save(commit=False)
+            bookshelf.user = request.user
+            bookshelf.save()
             data = {
                 "success": True,
                 "deleteURL": reverse("delete_bookshelf", kwargs={
-                    "id": obj.id,
+                    "id": bookshelf.id,
                 }),
-                "id": obj.id,
+                "shelfURL": reverse("detail_bookshelf", kwargs={
+                    "id": bookshelf.id,
+                }),
+                "id": bookshelf.id,
             }
             return JsonResponse(data)
         else:
@@ -44,7 +64,6 @@ def create_bookshelf(request):
 @login_required
 def delete_bookshelf(request, id):
     if request.method == "DELETE":
-        print(id)
         bookshelf = get_object_or_404(Bookshelf, pk=id)
         if bookshelf.user == request.user:
             bookshelf.delete()
