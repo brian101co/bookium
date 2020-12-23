@@ -31,10 +31,13 @@ def create_book(request, bookshelf_id):
             book.save()
             data = {
                 "success": True,
+                "deleteURL": reverse("delete_book", kwargs={
+                    "book_id": book.id
+                }),
             }
             return JsonResponse(data)
         else:
-            return JsonResponse({"failure": True, "msg": "Form Invalid"})
+            return JsonResponse({"success": False, "msg": "Form Invalid"})
 
 
 @login_required
