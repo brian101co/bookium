@@ -44,7 +44,7 @@
                                         </figure>
                                         Edit
                                     </div>
-                                    <div role="button" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="deleteBook($event, book.deleteURL, index)">
+                                    <div role="button" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="openDeleteModal($event, false, true, index)">
                                         <figure class="image mr-2 is-24x24">
                                             <img src="{% static 'profiles/images/remove.svg' %}" alt="Remove Book">
                                         </figure>
@@ -79,13 +79,13 @@
                                     <img v-on:click="openEditMenu" data-id="{{ book.id }}" role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Book">
                                 </figure>
                                 <div class="box editing-menu" id="edit-{{ book.id }}">
-                                    <div class="wrapper is-flex is-align-content-center mb-3 is-clickable">
+                                    <div data-editURL="{% url 'edit_book' book.id %}" v-on:click="openEditModal" class="wrapper is-flex is-align-content-center mb-3 is-clickable">
                                         <figure class="image is-24x24 mr-2">
                                             <img role="button" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
                                         </figure>
                                         Edit
                                     </div>
-                                    <div role="button" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="deleteBook" data-id="{{ book.id }}" data-action="{% url 'delete_book' book.id %}">
+                                    <div role="button" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="openDeleteModal($event, true)" data-id="{{ book.id }}" data-action="{% url 'delete_book' book.id %}">
                                         <figure class="image mr-2 is-24x24">
                                             <img src="{% static 'profiles/images/remove.svg' %}" alt="Remove Book">
                                         </figure>
@@ -105,6 +105,8 @@
                 {% endfor %}
 
                 {% include "books/includes/create_book_snippet.html" %}
+                {% include "books/includes/edit_book_snippet.html" %}
+                {% include "books/includes/delete_book_snippet.html" %}
             </div>
         </div>
     </div>
@@ -118,7 +120,12 @@
         data() {
             return {
                 createBookModalOpen: false,
+                editBookModalOpen: false,
+                deleteBookModalOpen: false,
                 addBookManually: false,
+                deleteData: {},
+                editData: {},
+                vueDeleteData: {},
                 query: "",
                 books: [],
                 selectedBooks: [],
@@ -127,6 +134,25 @@
         methods: {
             openModal() {
                 this.createBookModalOpen = !this.createBookModalOpen;
+            },
+            openEditModal(event) {
+                this.editBookModalOpen = !this.editBookModalOpen;
+
+                if (event.target.dataset.editurl) {
+                    this.editData.url = event.target.dataset.editurl;
+                }
+            },
+            openDeleteModal(event, ssr, vue, idx) {
+                this.deleteBookModalOpen = !this.deleteBookModalOpen;
+                if (ssr) {
+                    this.deleteData.action = event.target.dataset.action;
+                    this.deleteData.id = event.target.dataset.id;
+                }
+
+                if (vue) {
+                    this.vueDeleteData.index = idx;
+                    this.vueDeleteData.action = this.selectedBooks[idx].deleteURL;
+                }
             },
             openEditMenu(event, index) {
                 if (event.target.dataset.id) {
@@ -173,8 +199,45 @@
                 })
 
             },
-            deleteBook(event, url, index) {
-                const deleteURL = url ? url : event.target.dataset.action;
+            editBook(event) {
+                const fields = event.target.querySelectorAll(".form-field");
+                const data = new FormData();
+
+                for (let field of fields) {
+                    if (field.type == "file") {
+                        if (field.files[0]) {
+                            data.append(field.name, field.files[0])
+                            continue;
+                        }
+                    } else if (field.value) {
+                        data.append(field.name, field.value)
+                    }
+                }
+
+                fetch(this.editData.url, {
+                    method: "POST",
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                    body: data
+                }).then(res => {
+                    return res.json();
+                }).then(data => {
+                    console.log(data);
+                }).catch(error => {
+                    console.log(error);
+                });
+
+            },
+            cancelDelete() {
+                this.deleteData = {};
+                this.vueDeleteData = {};
+                this.openDeleteModal();
+            },
+            deleteBook() {
+                const deleteURL = this.vueDeleteData.action ? this.vueDeleteData.action : this.deleteData.action;
                 fetch(deleteURL, {
                     method: "DELETE",
                     headers: {
@@ -186,11 +249,17 @@
                     return res.json();
                 }).then(data => {
                     if (data.success) {
-                        if (event.target.dataset.id) {
-                            const book = document.querySelector(`#book-${event.target.dataset.id}`);
+                        if (this.deleteData.id) {
+                            const book = document.querySelector(`#book-${this.deleteData.id}`);
                             book.remove();
+
+                            // Reset
+                            this.openDeleteModal();
+                            this.deleteData = {};
                         } else {
-                            this.selectedBooks.splice(index, 1);
+                            this.selectedBooks.splice(this.vueDeleteData.index, 1);
+                            this.openDeleteModal();
+                            this.vueDeleteData = {};
                         }
                     }
                 }).catch(error => {

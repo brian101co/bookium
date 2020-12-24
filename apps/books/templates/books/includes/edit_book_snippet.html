@@ -1,0 +1,74 @@
+<div class="modal" v-bind:class="{'is-active': editBookModalOpen}">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="card">
+            <div class="card-content">
+                <h2 class="title is-3">Edit Book</h2>
+                <form v-on:submit.prevent="editBook">
+                    <div class="field">
+                        <label for="title" class="label">Title</label>
+                        <div class="control">
+                            <input class="input form-field" name="title" type="text" placeholder="Title">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="subtitle" class="label">Subtitle</label>
+                        <div class="control">
+                            <input class="input form-field" name="subtitle" type="text" placeholder="Subtitle">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="author" class="label">Author</label>
+                        <div class="control">
+                            <input class="input form-field" name="author" type="text" placeholder="Author">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="description" class="label">Description</label>
+                        <div class="control">
+                            <textarea class="textarea form-field" name="description" placeholder="Book description"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="file has-name">
+                            <label class="file-label">
+                                <input class="file-input form-field" type="file" name="image">
+                                <span class="file-cta">
+                                    <span class="file-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                                            <path fill-rule="evenodd" d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                                        </svg>
+                                    </span>
+                                    <span class="file-label">
+                                        Choose a book image…
+                                    </span>
+                                </span>
+                                <span class="file-name">
+                                    No file uploaded
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="author" class="label">Page Count</label>
+                        <div class="control">
+                            <input class="input form-field" name="page_count" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="publish_year" class="label">Publish Year</label>
+                        <div class="control">
+                            <input class="input form-field" name="publish_year" type="text" placeholder="2017">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="button is-primary mr-2 is-rounded">Save</button>
+                    <button v-on:click="openEditModal()" type="button" class="button is-light is-info is-rounded">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" v-on:click="openEditModal()" aria-label="close"></button>
+
+</div>
