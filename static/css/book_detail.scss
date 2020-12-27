@@ -1,0 +1,15 @@
+.media-right {
+    position: relative;
+}
+
+.editing-menu {
+    position: absolute;
+    top: 2rem;
+    left: -6.5rem;
+    transform: scale(0);
+    transition: transform 0.15s;
+}
+
+.editing-menu.active {
+    transform: scale(1);
+}

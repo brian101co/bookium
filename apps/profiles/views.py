@@ -11,6 +11,7 @@ def update_user_profile(request, username):
     if request.method == "POST":
         user = get_object_or_404(User, username=username)
         form = ProfileForm(request.POST, request.FILES, instance=user.profile)
+        print(request.FILES)
         if form.is_valid():
             form.save()
             return redirect("profile", username=request.user.username)
@@ -25,14 +26,14 @@ def bookium_user_profile(request, username):
     following = False
     if user.profile in request.user.profile.follows.all():
         following = True
-   
+
     context = {
         "user": user,
         "form": form,
         "following": following,
     }
 
-    return render(request, "profiles/bookium_profile.html", context=context)  
+    return render(request, "profiles/bookium_profile.html", context=context)
 
 @login_required
 def search_for_user(request):

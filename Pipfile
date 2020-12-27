@@ -13,6 +13,8 @@ django-imagekit = "*"
 pillow = "*"
 django-crispy-forms = "*"
 requests = "*"
+python-dotenv = "*"
+mysqlclient = "*"
 
 [requires]
 python_version = "3.6"
