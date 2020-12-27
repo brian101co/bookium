@@ -1,6 +1,6 @@
 import json
 import requests
-import io
+
 
 from django.forms import modelform_factory
 from django.shortcuts import render, get_object_or_404, reverse, redirect
@@ -59,6 +59,9 @@ def create_bookshelf(request):
                 "success": True,
                 "deleteURL": reverse("delete_bookshelf", kwargs={
                     "id": bookshelf.id,
+                }),
+                "detailURL": reverse("detail_bookshelf", kwargs={
+                    "pk": bookshelf.id
                 }),
                 "id": bookshelf.id,
             }

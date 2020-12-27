@@ -58,7 +58,7 @@
 
                 <article class="card block is-clickable" v-for="(shelf, index) in shelves" v-bind:id="shelf.id">
                     <div class="card-content is-flex is-justify-content-space-between is-align-content-center">
-                        <h5 class="title is-5 mb-0">${ shelf.name }</h5>
+                        <h5 class="title is-5 mb-0"><a v-bind:href="shelf.detailURL">${ shelf.name }</a></h5>
                         <div class="is-flex is-justify-content-space-between is-align-content-center">
                             ${ shelf.count }
                             <div class="is-flex">
@@ -105,7 +105,6 @@
                 shelfModalOpen: false,
                 shelf_name: "",
                 shelves: [],
-                following: "True" === "{{ following }}",
                 hovered: false,
             }
         },
@@ -133,6 +132,7 @@
                         if (data.success) {
                             bookshelf.count = 0;
                             bookshelf.deleteURL = data.deleteURL;
+                            bookshelf.detailURL = data.detailURL;
                             bookshelf.id = `shelf-${data.id}`;
                             this.shelves.unshift(bookshelf);
                         }
