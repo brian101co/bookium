@@ -3,7 +3,7 @@ import requests
 import io
 
 from django.forms import modelform_factory
-from django.shortcuts import render, get_object_or_404, reverse
+from django.shortcuts import render, get_object_or_404, reverse, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden, Http404
 from django.views.generic import DetailView
@@ -103,7 +103,9 @@ def edit_book(request, book_id):
             form = Form(request.POST, request.FILES, instance=book)
             if form.is_valid():
                 form.save()
-                return JsonResponse({"success": True})
+                return JsonResponse({"success": True, "redirect": reverse("detail_bookshelf", kwargs={
+                    "pk": book.bookshelf.id,
+                })})
             else:
                 print(form.errors)
                 return JsonResponse({"success": False})
