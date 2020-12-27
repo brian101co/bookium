@@ -14,9 +14,15 @@
 
                 <div class="card">
                     <div class="card-content is-flex is-align-items-center">
+                        {% if request.user.profile.avatar %}
+                        <figure class="image mr-3 is-48x48">
+                            <img class="is-rounded" src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}'s Profile Picture'">
+                        </figure>
+                        {% else %}
                         <figure class="image mr-3 is-48x48">
                             <img class="is-rounded" src="https://bulma.io/images/placeholders/96x96.png" alt="Placeholder image">
                         </figure>
+                        {% endif %}
                         <button class="fake-input-btn" type="button" v-on:click="openModal()">Connect with friends by sharing a book.</button>
                     </div>
                 </div>
@@ -52,7 +58,9 @@
                     <div class="post" v-for="post in posts">
                         <div class="box mt-5">
                             <div class="block is-flex is-justify-content-space-between is-align-content-center">
-                                <h5 class="is-size-5 has-text-weight-bold">${ post.user }</h5>
+                                <a v-bind:href="userURL">
+                                    <h5 class="is-size-5 has-text-weight-bold">${ post.user }</h5>
+                                </a>
                                 <p class="has-text-grey"><small>${ post.created_at }</small></p>
                             </div>
                             <p>${ post.body }</p>
@@ -105,6 +113,7 @@
                 body: "",
                 user: "{{ request.user.username }}",
                 created_at: "Now",
+                userURL: "{% url 'profile' request.user.username %}",
                 modal: {
                     opened: false,
                 }
