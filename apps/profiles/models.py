@@ -19,6 +19,7 @@ class Profile(models.Model):
     )
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     follows = models.ManyToManyField('self', related_name='followed_by', symmetrical=False)
+    bio = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s profile "

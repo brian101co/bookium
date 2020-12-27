@@ -28,7 +28,10 @@
                             <div class="media-content">
                                 <p class="title is-4">{{ user.username }}</p>
                                 <p class="subtitle"><small class="has-text-grey is-size-6">{{ user.profile.followed_by.count }} followers</small></p>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde deleniti saepe laborum reprehenderit culpa facilis fugit laboriosam dicta voluptate eius, quod, accusamus, quis corporis voluptatum vel? Eius sequi iure sed.</p>
+                                <p>{{ user.profile.bio }}</p>
+                                {% if user == request.user %}
+                                <a href="{% url 'edit_profile' request.user.username %}" class="button mt-3">Edit Profile</a>
+                                {% endif %}
                             </div>
                             {% if user != request.user %}
                             <div class="media-right">

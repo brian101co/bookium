@@ -1,9 +1,22 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from apps.books.forms import BookshelfForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Profile
+from .forms import ProfileForm
+
+@login_required
+def update_user_profile(request, username):
+    if request.method == "POST":
+        user = get_object_or_404(User, username=username)
+        form = ProfileForm(request.POST, request.FILES, instance=user.profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profile", username=request.user.username)
+    else:
+        form = ProfileForm()
+        return render(request, 'profiles/edit_profile.html', {"form":form})
 
 @login_required
 def bookium_user_profile(request, username):
