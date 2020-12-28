@@ -27,7 +27,7 @@
                             </div>
                             <div class="media-content">
                                 <p class="title is-4">{{ user.username }}</p>
-                                <p class="subtitle"><small class="has-text-grey is-size-6">{{ user.profile.followed_by.count }} followers</small></p>
+                                <p class="subtitle"><small class="has-text-grey is-size-6">${ followerCount } followers</small></p>
                                 <p>{{ user.profile.bio }}</p>
                                 {% if user == request.user %}
                                 <a href="{% url 'edit_profile' request.user.username %}" class="button mt-3">Edit Profile</a>
@@ -35,15 +35,12 @@
                             </div>
                             {% if user != request.user %}
                             <div class="media-right">
-                                {% if following %}
                                 <figure v-if="following" class="image is-24x24">
                                     <img v-on:click="unfollow()" class="is-clickable" src="{% static 'profiles/images/following.svg' %}" alt="follow button">
                                 </figure>
-                                {% else %}
                                 <figure v-else class="image is-24x24">
                                     <img v-on:click="followUser()" class="is-clickable" src="{% static 'profiles/images/follow.svg' %}" alt="follow button">
                                 </figure>
-                                {% endif %}
                             </div>
                             {% endif %}
                         </div>
@@ -115,6 +112,8 @@
                 shelf_name: "",
                 shelves: [],
                 hovered: false,
+                following: "{{ following }}" == "True",
+                followerCount: parseInt("{{ user.profile.followed_by.count }}")
             }
         },
         methods: {
@@ -155,6 +154,7 @@
             },
             followUser() {
                 this.following = true;
+                this.followerCount++;
                 fetch("{% url 'follow' user.username %}", {
                     method: "POST",
                     headers: {
@@ -170,6 +170,7 @@
             },
             unfollow() {
                 this.following = false;
+                this.followerCount--;
                 fetch("{% url 'unfollow' user.username %}", {
                     method: "POST",
                     headers: {
