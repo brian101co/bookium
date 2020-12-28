@@ -5,7 +5,7 @@
     <div class="container">
         <div class="columns">
             <div class="column">
-                <form action="." method="POST">
+                <form action="." method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button type="submit" class="button">Submit</button>

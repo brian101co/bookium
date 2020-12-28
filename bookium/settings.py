@@ -139,3 +139,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 SASS_PROCESSOR_ROOT = STATIC_ROOT
 
+try:
+    from .local import *
+except ImportError:
+    print("In production")
