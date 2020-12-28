@@ -15,9 +15,9 @@
                     <div class="card-content">
                         <div class="media">
                             <div class="media-left">
-                                {% if request.user.profile.avatar %}
+                                {% if user.profile.avatar %}
                                 <figure class="image is-48x48">
-                                    <img class="is-rounded" src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}'s Profile Image'">
+                                    <img class="is-rounded" src="{{ user.profile.avatar.url }}" alt="{{ user.username }}'s Profile Image'">
                                 </figure>
                                 {% else %}
                                 <figure class="image is-48x48">
