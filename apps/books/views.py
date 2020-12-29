@@ -1,6 +1,6 @@
 import json
 import requests
-
+import os
 
 from django.forms import modelform_factory
 from django.shortcuts import render, get_object_or_404, reverse, redirect
@@ -138,7 +138,7 @@ def edit_book(request, book_id):
 
 
 def search_for_book(request):
-    API_KEY = "AIzaSyDtKKU2Hr6HZJxZbzlUMjwZqtR7PT2qJ1c"
+    API_KEY = os.getenv("API_KEY")
     title = request.GET.get("q").replace(" ", "+")
     res = requests.get(f"https://www.googleapis.com/books/v1/volumes?q={title}+intitle&key={API_KEY}")
     return JsonResponse(res.json(), safe=False)
