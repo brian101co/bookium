@@ -107,6 +107,7 @@
                 {% include "books/includes/create_book_snippet.html" %}
                 {% include "books/includes/edit_book_snippet.html" %}
                 {% include "books/includes/delete_book_snippet.html" %}
+                {% include "books/includes/manual_book_snippet.html" %}
             </div>
         </div>
     </div>
@@ -120,9 +121,9 @@
         data() {
             return {
                 createBookModalOpen: false,
+                createManualBookModalOpen: false,
                 editBookModalOpen: false,
                 deleteBookModalOpen: false,
-                addBookManually: false,
                 deleteData: {},
                 editData: {},
                 vueDeleteData: {},
@@ -134,6 +135,12 @@
         methods: {
             openModal() {
                 this.createBookModalOpen = !this.createBookModalOpen;
+            },
+            openCreateManualBookModal(event) {
+                if (event.target.dataset.close) {
+                    this.openModal();
+                }
+                this.createManualBookModalOpen = !this.createManualBookModalOpen;
             },
             openEditModal(event) {
                 this.editBookModalOpen = !this.editBookModalOpen;
@@ -199,6 +206,34 @@
                 })
 
             },
+            addManualBook(event) {
+                const data = new FormData(event.target);
+                const manualBook = {};
+                for (let item of data) {
+                    if (item[1]) {
+                        manualBook[item[0]] = item[1];
+                    }
+                }
+
+                fetch("{% url 'create_book_manually' object.id %}", {
+                    method: "POST",
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    credentials: "same-origin",
+                    body: new FormData(event.target),
+                }).then(res => {
+                    return res.json();
+                }).then(data => {
+                    if (data.success) {
+                        this.selectedBooks.push(manualBook);
+                        this.openCreateManualBookModal(event);
+                    }
+                }).catch(error => {
+                    console.log(error);
+                })
+            },
             editBook(event) {
                 const fields = event.target.querySelectorAll(".form-field");
                 const data = new FormData();
@@ -225,7 +260,10 @@
                 }).then(res => {
                     return res.json();
                 }).then(data => {
-                    if (data.success) window.location.replace(data.redirect);
+                    if (data.success) {
+                        this.openEditModal = !this.openEditModal;
+                        window.location.replace(data.redirect);
+                    }
                 }).catch(error => {
                     console.log(error);
                 });

@@ -44,6 +44,19 @@ def create_book(request, bookshelf_id):
         else:
             return JsonResponse({"success": False, "msg": "Form Invalid"})
 
+@login_required
+def create_manual_book(request, bookshelf_id):
+    if request.method == "POST":
+        form = BookForm(request.POST, request.FILES)
+        print(request.POST)
+        if form.is_valid():
+            book = form.save(commit=False)
+            book.bookshelf = get_object_or_404(Bookshelf, pk=bookshelf_id)
+            book.save()
+            return JsonResponse({"success":True})
+        else:
+            return JsonResponse({"success":False, "msg":"form errors"})
+
 
 @login_required
 def create_bookshelf(request):
