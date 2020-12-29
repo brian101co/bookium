@@ -6,9 +6,13 @@
   top: 2rem;
   left: -6.5rem;
   transform: scale(0);
-  transition: transform 0.15s; }
+  transition: transform 0.15s;
+  z-index: 1000; }
 
 .editing-menu.active {
   transform: scale(1); }
+
+article.card.block {
+  overflow: visible; }
 
 /*# sourceMappingURL=book_detail.css.map */
