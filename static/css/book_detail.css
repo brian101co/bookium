@@ -7,7 +7,7 @@
   left: -6.5rem;
   transform: scale(0);
   transition: transform 0.15s;
-  z-index: 1000; }
+  z-index: 30; }
 
 .editing-menu.active {
   transform: scale(1); }

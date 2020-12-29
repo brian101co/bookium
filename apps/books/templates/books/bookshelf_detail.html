@@ -38,7 +38,7 @@
                                     <img v-on:click="openEditMenu($event, index)" role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Book">
                                 </figure>
                                 <div class="box editing-menu" v-bind:class={active:book.is_active}>
-                                    <div class="wrapper is-flex is-align-content-center mb-3 is-clickable">
+                                    <div v-bind:data-editURL="book.updateURL" v-on:click="openEditModal" class="wrapper is-flex is-align-content-center mb-3 is-clickable">
                                         <figure class="image is-24x24 mr-2">
                                             <img role="button" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
                                         </figure>
@@ -229,7 +229,7 @@
                 }).then(data => {
                     if (data.success) {
                         manualBook.deleteURL = data.deleteURL;
-                        manualBook.editURL = data.updateURL;
+                        manualBook.updateURL = data.updateURL;
                         this.selectedBooks.push(manualBook);
                         this.openCreateManualBookModal(event);
                     }
