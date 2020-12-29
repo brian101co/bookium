@@ -48,12 +48,20 @@ def create_book(request, bookshelf_id):
 def create_manual_book(request, bookshelf_id):
     if request.method == "POST":
         form = BookForm(request.POST, request.FILES)
-        print(request.POST)
         if form.is_valid():
             book = form.save(commit=False)
             book.bookshelf = get_object_or_404(Bookshelf, pk=bookshelf_id)
             book.save()
-            return JsonResponse({"success":True})
+            data = {
+                "success": True,
+                "updateURL": reverse("edit_book", kwargs={
+                    "book_id": book.id
+                }),
+                "deleteURL": reverse("delete_book", kwargs={
+                    "book_id": book.id
+                })
+            }
+            return JsonResponse(data)
         else:
             return JsonResponse({"success":False, "msg":"form errors"})
 

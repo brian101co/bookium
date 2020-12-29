@@ -197,6 +197,7 @@
                         // Adding is_active state to for opening the book edit menu
                         book.is_active = false;
                         book.deleteURL = data.deleteURL;
+                        book.updateURL = data.updateURL;
                         this.selectedBooks.push(book);
                         this.openModal();
                         this.books = [];
@@ -227,6 +228,8 @@
                     return res.json();
                 }).then(data => {
                     if (data.success) {
+                        manualBook.deleteURL = data.deleteURL;
+                        manualBook.editURL = data.updateURL;
                         this.selectedBooks.push(manualBook);
                         this.openCreateManualBookModal(event);
                     }
