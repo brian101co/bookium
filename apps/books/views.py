@@ -2,6 +2,7 @@ import json
 import requests
 import os
 
+from django.conf import settings
 from django.forms import modelform_factory
 from django.shortcuts import render, get_object_or_404, reverse, redirect
 from django.contrib.auth.decorators import login_required
@@ -139,6 +140,9 @@ def edit_book(request, book_id):
 
 def search_for_book(request):
     API_KEY = os.getenv("API_KEY")
+    if settings.DEBUG:
+        from bookium import local
+        API_KEY = local.API_KEY
     title = request.GET.get("q").replace(" ", "+")
     res = requests.get(f"https://www.googleapis.com/books/v1/volumes?q={title}+intitle&key={API_KEY}")
     return JsonResponse(res.json(), safe=False)
