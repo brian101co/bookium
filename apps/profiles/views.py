@@ -12,7 +12,6 @@ def update_user_profile(request, username):
     if request.method == "POST":
         user = get_object_or_404(User, username=username)
         form = ProfileForm(request.POST, request.FILES, instance=user.profile)
-        print(request.FILES)
         if form.is_valid():
             form.save()
             return redirect("profile", username=request.user.username)
@@ -29,7 +28,7 @@ def bookium_user_profile(request, username):
         following = True
     
     if user == request.user:
-        bookshelves = Bookshelf.objects.all()
+        bookshelves = Bookshelf.objects.filter(user=user)
     else:
         bookshelves = Bookshelf.objects.public_shelves()
 
