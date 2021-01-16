@@ -122,10 +122,11 @@
             toggleShelfModal() {
                 this.shelfModalOpen = !this.shelfModalOpen;
             },
-            addBookshelf() {
+            addBookshelf(event) {
                 if (this.shelf_name) {
                     const bookshelf = {
                         name: this.shelf_name,
+                        is_public: event.target.is_public.checked
                     }
 
                     fetch("{% url 'create_bookshelf' %}", {
