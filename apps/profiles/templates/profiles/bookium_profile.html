@@ -79,7 +79,9 @@
                     </div>
                 </article>
 
-                {% include "books/includes/bookshelf_snippet.html" with user=user %}
+                <!-- List of Bookshelves Template -->
+                {% include "books/includes/bookshelf_snippet.html" with shelves=shelves %}
+                <!-- End List of Bookshelves -->
                 {% include "books/includes/create_bookshelf_snippet.html" with form=form %}
 
                 <div class="p-4 mt-4">

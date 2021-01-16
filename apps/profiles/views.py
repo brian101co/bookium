@@ -4,6 +4,7 @@ from apps.books.forms import BookshelfForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Profile
+from apps.books.models import Bookshelf
 from .forms import ProfileForm
 
 @login_required
@@ -26,11 +27,17 @@ def bookium_user_profile(request, username):
     following = False
     if user.profile in request.user.profile.follows.all():
         following = True
+    
+    if user == request.user:
+        bookshelves = Bookshelf.objects.all()
+    else:
+        bookshelves = Bookshelf.objects.public_shelves()
 
     context = {
         "user": user,
         "form": form,
         "following": following,
+        "shelves": bookshelves,
     }
 
     return render(request, "profiles/bookium_profile.html", context=context)
