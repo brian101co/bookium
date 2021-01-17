@@ -242,13 +242,11 @@
                         if (this.shelf.ssr) {
                             const parent = document.querySelector(`#${this.shelf.parentElemID}`);
                             parent.remove();
-                            this.openDeleteModal();
-                            this.shelf = {};
                         } else {
                             this.shelves.splice(this.shelf.idx, 1);
-                            this.openDeleteModal();
-                            this.shelf = {};
                         }
+                        this.openDeleteModal();
+                        this.shelf = {};
                     }
                 }).catch(err => {
                     console.log(err);
