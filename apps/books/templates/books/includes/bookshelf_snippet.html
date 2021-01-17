@@ -4,15 +4,23 @@
 <article class="card block is-clickable" id="shelf-{{ bookshelf.id }}">
     <div class="card-content is-flex is-justify-content-space-between is-align-content-center">
         <h5 class="title is-5 mb-0"><a href="{% url 'detail_bookshelf' bookshelf.id %}">{{ bookshelf }}</a></h5>
-        <div class="is-flex is-justify-content-space-between is-align-content-center">
-            {{ bookshelf.books.count }}
-            <div class="is-flex">
-                <figure class="image is-24x24 mr-2">
-                    <img class="ml-2 " src="{% static 'profiles/images/book.svg' %}" alt="Book Icon">
-                </figure>
-                <figure class="image is-24x24">
-                    <img v-on:click="removeShelf" data-ssr="true" data-parent="shelf-{{ bookshelf.id }}" data-action="{% url 'delete_bookshelf' bookshelf.id %}" class="ml-2" src="{% static 'profiles/images/remove.svg' %}" alt="Remove Bookshelf Icon">
-                </figure>
+        <div class="bookshelf-menu-container">
+            <figure class="image is-32x32">
+                <img v-on:click="openMenuModal" data-id="{{ bookshelf.id }}" role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Bookshelf">
+            </figure>
+            <div class="box editing-menu" id="edit-{{ bookshelf.id }}">
+                <div data-editURL="" v-on:click="" class="wrapper is-flex is-align-content-center mb-3 is-clickable">
+                    <figure class="image is-24x24 mr-2">
+                        <img role="button" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                    </figure>
+                    Edit
+                </div>
+                <div role="button" data-ssr="true" data-parent="shelf-{{ bookshelf.id }}" data-action="{% url 'delete_bookshelf' bookshelf.id %}" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="openDeleteModal">
+                    <figure class="image mr-2 is-24x24">
+                        <img src="{% static 'profiles/images/remove.svg' %}" alt="Remove Book">
+                    </figure>
+                    Delete
+                </div>
             </div>
         </div>
     </div>

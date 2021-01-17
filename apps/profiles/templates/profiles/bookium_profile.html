@@ -1,9 +1,10 @@
 {% extends 'core/base.html' %}
 
-{% load humanize static %}
+{% load humanize static sass_tags %}
 
 {% block styles %}
 <link rel="stylesheet" href="https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css" />
+<link rel="stylesheet" type="text/css" href="{% sass_src 'profiles/css/profile.scss' %}">
 {% endblock %}
 
 {% block content %}
@@ -65,7 +66,26 @@
                 <article class="card block is-clickable" v-for="(shelf, index) in shelves" v-bind:id="shelf.id">
                     <div class="card-content is-flex is-justify-content-space-between is-align-content-center">
                         <h5 class="title is-5 mb-0"><a v-bind:href="shelf.detailURL">${ shelf.name }</a></h5>
-                        <div class="is-flex is-justify-content-space-between is-align-content-center">
+                        <div class="bookshelf-menu-container">
+                            <figure class="image is-32x32">
+                                <img v-on:click="openMenuModal" v-bind:data-id="shelf.id" role="button" class="is-clickable" src="{% static 'profiles/images/more.svg' %}" alt="Edit Bookshelf">
+                            </figure>
+                            <div class="box editing-menu" v-bind:id="'edit-' + shelf.id">
+                                <div data-editURL="" v-on:click="" class="wrapper is-flex is-align-content-center mb-3 is-clickable">
+                                    <figure class="image is-24x24 mr-2">
+                                        <img role="button" src="{% static 'profiles/images/edit.svg' %}" alt="Edit Book">
+                                    </figure>
+                                    Edit
+                                </div>
+                                <div role="button" v-bind:data-idx="index" class="wrapper is-flex is-align-content-center is-clickable" v-on:click="openDeleteModal">
+                                    <figure class="image mr-2 is-24x24">
+                                        <img src="{% static 'profiles/images/remove.svg' %}" alt="Remove Book">
+                                    </figure>
+                                    Delete
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="is-flex is-justify-content-space-between is-align-content-center">
                             ${ shelf.count }
                             <div class="is-flex">
                                 <figure class="image is-24x24 mr-2">
@@ -75,7 +95,7 @@
                                     <img v-on:click="removeShelf" v-bind:data-index="index" v-bind:data-parent="shelf.id" v-bind:data-action="shelf.deleteURL" class="ml-2" src="{% static 'profiles/images/remove.svg' %}" alt="Remove Bookshelf Icon">
                                 </figure>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </article>
 
@@ -83,6 +103,7 @@
                 {% include "books/includes/bookshelf_snippet.html" with shelves=shelves %}
                 <!-- End List of Bookshelves -->
                 {% include "books/includes/create_bookshelf_snippet.html" with form=form %}
+                {% include "books/includes/delete_bookshelf_snippet.html" %}
 
                 <div class="p-4 mt-4">
                     <h2 class="title is-3">Posts</h2>
@@ -112,6 +133,8 @@
             return {
                 shelfModalOpen: false,
                 shelf_name: "",
+                deleteBookModalOpen: false,
+                shelf: {},
                 shelves: [],
                 hovered: false,
                 following: "{{ following }}" == "True",
@@ -121,6 +144,23 @@
         methods: {
             toggleShelfModal() {
                 this.shelfModalOpen = !this.shelfModalOpen;
+            },
+            openMenuModal(event) {
+                if (event.target.dataset.id) {
+                    const menu = document.querySelector(`#edit-${event.target.dataset.id}`);
+                    menu.classList.toggle("active");
+                }
+            },
+            openDeleteModal(event) {
+                this.deleteBookModalOpen = !this.deleteBookModalOpen;
+                if (event.target.dataset.ssr) {
+                    this.shelf.parentElemID = event.target.dataset.parent;
+                    this.shelf.deleteURL = event.target.dataset.action;
+                    this.shelf.ssr = true;
+                } else if (event.target.dataset.idx) {
+                    this.shelf = this.shelves[event.target.dataset.idx];
+                    this.shelf.idx = parseInt(event.target.dataset.idx);
+                }
             },
             addBookshelf(event) {
                 if (this.shelf_name) {
@@ -144,7 +184,7 @@
                             bookshelf.count = 0;
                             bookshelf.deleteURL = data.deleteURL;
                             bookshelf.detailURL = data.detailURL;
-                            bookshelf.id = `shelf-${data.id}`;
+                            bookshelf.id = data.id;
                             this.shelves.unshift(bookshelf);
                         }
                     }).catch(err => {
@@ -187,8 +227,8 @@
                     console.log(err);
                 })
             },
-            removeShelf(event) {
-                fetch(event.target.dataset.action, {
+            removeShelf() {
+                fetch(this.shelf.deleteURL, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
@@ -199,11 +239,16 @@
                     return res.json();
                 }).then(data => {
                     if (data.success) {
-                        if (event.target.dataset.ssr === "true") {
-                            const parent = document.querySelector(`#${event.target.dataset.parent}`);
+                        if (this.shelf.ssr) {
+                            const parent = document.querySelector(`#${this.shelf.parentElemID}`);
                             parent.remove();
+                            this.openDeleteModal();
+                            this.shelf = {};
+                        } else {
+                            this.shelves.splice(this.shelf.idx, 1);
+                            this.openDeleteModal();
+                            this.shelf = {};
                         }
-                        this.shelves.splice(event.target.dataset.index, 1);
                     }
                 }).catch(err => {
                     console.log(err);

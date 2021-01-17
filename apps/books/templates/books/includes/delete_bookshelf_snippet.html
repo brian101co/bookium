@@ -1,0 +1,15 @@
+<div class="modal" v-bind:class="{'is-active': deleteBookModalOpen}">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="card">
+            <div class="card-content">
+                <h2 class="title is-3">Are you sure?</h2>
+
+                <button v-on:click="removeShelf" type="submit" class="button is-danger mr-2 is-rounded">Yes, Delete</button>
+                <button v-on:click="openDeleteModal" type="button" class="button is-light is-info is-rounded">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" v-on:click="openDeleteModal" aria-label="close"></button>
+</div>
